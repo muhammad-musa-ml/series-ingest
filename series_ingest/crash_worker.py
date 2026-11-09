@@ -2,16 +2,16 @@
 ingest() returns. Run by crashcheck, which kills it at a random moment."""
 import sys
 
-from .gen import batch_for
+from .gen import crash_batch
 from .store import Store
 
 
 def main(directory, seed, ack_path):
-    store = Store(directory, memtable_limit=3000, fsync=True)
+    store = Store(directory, memtable_limit=500, fsync=True)
     with open(ack_path, "a") as ack:
         i = 0
         while True:
-            store.ingest(batch_for(seed, i))
+            store.ingest(crash_batch(seed, i))
             ack.write("%d\n" % i)
             ack.flush()
             i += 1

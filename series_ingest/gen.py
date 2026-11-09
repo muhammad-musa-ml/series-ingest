@@ -31,6 +31,11 @@ def series_points(kind, start_idx, n, seed, jitter_ns=0):
     return pts
 
 
+def crash_batch(seed, i):
+    # small on purpose: a batch smaller than the file buffer is what a missing flush would lose
+    return batch_for(seed, i, channels=4, per_channel=5)
+
+
 def batch_for(seed, i, channels=4, per_channel=100):
     """Batch number i: the same call always returns the same points."""
     batch = {}

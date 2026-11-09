@@ -35,6 +35,18 @@ def test_query_spans_segments_and_memory(tmp_path):
     s.close()
 
 
+def test_an_acknowledged_batch_is_already_in_the_log_file(tmp_path):
+    from series_ingest.wal import read_wal
+
+    s = Store(str(tmp_path), memtable_limit=10**9, fsync=False)
+    for i in range(3):
+        s.ingest(batch_for(i))
+        log = os.path.join(tmp_path, [f for f in os.listdir(tmp_path) if f.endswith(".log")][0])
+        # read the file while the writer is still open: nothing may sit in a process buffer
+        assert list(read_wal(log)) == [batch_for(k) for k in range(i + 1)]
+    s.close()
+
+
 def test_reopen_without_flush_recovers_from_the_log(tmp_path):
     s = Store(str(tmp_path), memtable_limit=10**9, fsync=False)
     for i in range(6):

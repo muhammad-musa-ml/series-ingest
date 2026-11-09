@@ -41,7 +41,8 @@ def test_corrupt_record_ends_the_log(tmp_path):
     write_log(p, 4)
     data = bytearray(p.read_bytes())
     first_len = int.from_bytes(data[0:4], "little")
-    second_payload_start = 8 + first_len + 8
-    data[second_payload_start + 3] ^= 0xFF
+    second_len = int.from_bytes(data[8 + first_len:12 + first_len], "little")
+    second_end = 8 + first_len + 8 + second_len
+    data[second_end - 1] ^= 0x01  # last byte of the last value: still decodes, now wrong
     p.write_bytes(bytes(data))
     assert list(read_wal(str(p))) == [make_batch(0)]

@@ -1,9 +1,20 @@
+import sys
 import threading
+
+import pytest
 
 from series_ingest.memtable import Memtable
 
 
-def test_count_and_points_agree_under_concurrent_add_and_take():
+@pytest.fixture
+def frequent_thread_switches():
+    old = sys.getswitchinterval()
+    sys.setswitchinterval(1e-6)
+    yield
+    sys.setswitchinterval(old)
+
+
+def test_count_and_points_agree_under_concurrent_add_and_take(frequent_thread_switches):
     mt = Memtable()
     n_writers, batches, per_batch = 4, 300, 7
     added_total = n_writers * batches * per_batch

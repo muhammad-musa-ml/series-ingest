@@ -9,7 +9,7 @@ import subprocess
 import sys
 import time
 
-from .gen import batch_for
+from .gen import crash_batch
 from .store import Store
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -18,7 +18,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 def expected_points(seed, n_batches):
     out = set()
     for i in range(n_batches):
-        for name, pts in batch_for(seed, i).items():
+        for name, pts in crash_batch(seed, i).items():
             out.update((name, t, v) for t, v in pts)
     return out
 
